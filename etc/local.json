@@ -2,7 +2,7 @@
   "title": "OpenWordnet-PT",
   "name": "OWN-PT",
   "tagline": "An open wordnet for Portuguese",
-  "icon": "📖",
+  "icon": "ownpt-baselogo.png",
 
   "searchLanguage": "pt",
   "displayLanguage": "pt",
@@ -21,9 +21,10 @@
   },
 
   "logo": {
-    "src": "ownpt-baselogo.png",
-    "url": "https://github.com/omwn/openWordnet-PT",
-    "alt": "OpenWordnet-PT"
+    "src":  "img/omw-logo.svg",
+    "url":  "https://omwn.org",
+    "alt":  "Open Multilingual Wordnet",
+    "name": "OMW"
   },
 
   "footer": "Built by Alexandre Rademaker, Valeria de Paiva, and contributors.",

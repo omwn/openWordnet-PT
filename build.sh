@@ -108,15 +108,18 @@ echo "Testing wn load"
 WN_TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$WN_TMPDIR"' EXIT
 tar -xJf "build/own-pt-${VERSION}.tar.xz" -C "$WN_TMPDIR"
+tar -xJf "build/own-en-${VERSION}.tar.xz" -C "$WN_TMPDIR"
 uv run python - <<PYEOF
 import wn
 wn.config.data_home = "$WN_TMPDIR"
 wn.add("$WN_TMPDIR/own-pt/own-pt-${VERSION}.xml")
-lexs = wn.lexicons(lang="pt")
-assert lexs, "No lexicons loaded for pt"
-n_words = len(wn.words(lang="pt"))
-assert n_words > 1000, f"Too few words: {n_words}"
-print(f"  OK: {len(lexs)} lexicon(s), {n_words} words")
+wn.add("$WN_TMPDIR/own-en/own-en-${VERSION}.xml")
+for lang, min_words in [("pt", 1000), ("en", 1000)]:
+    lexs = wn.lexicons(lang=lang)
+    assert lexs, f"No lexicons loaded for {lang}"
+    n_words = len(wn.words(lang=lang))
+    assert n_words > min_words, f"Too few words for {lang}: {n_words}"
+    print(f"  {lang}: {len(lexs)} lexicon(s), {n_words} words")
 PYEOF
 echo "wn load test passed."
 
@@ -128,6 +131,8 @@ mkdir -p "$CYGNET_WORK/bin/raw_wns"
 cp "$PROJECT_DIR/etc/wordnets.toml" "$CYGNET_WORK/wordnets.toml"
 cp "$PROJECT_DIR/build/own-pt/own-pt-${VERSION}.xml" \
    "$CYGNET_WORK/bin/raw_wns/own-pt-${VERSION}.xml"
+cp "$PROJECT_DIR/build/own-en/own-en-${VERSION}.xml" \
+   "$CYGNET_WORK/bin/raw_wns/own-en-${VERSION}.xml"
 
 bash "$CYGNET_DIR/build.sh" --work-dir "$CYGNET_WORK"
 
