@@ -4,7 +4,7 @@
   "tagline": "An open wordnet for Portuguese",
   "icon": "ownpt-baselogo.png",
 
-  "searchLanguage": "pt",
+  "searchLanguage": ["pt", "en"],
   "displayLanguage": "pt",
 
   "databases": {
