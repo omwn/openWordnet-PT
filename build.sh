@@ -137,12 +137,20 @@ fi  # end MODE == full
 if [[ "$MODE" == "cygnet-only" ]]; then
     for pkg in "own-pt" "own-en"; do
         tarball="build/${pkg}-${VERSION}.tar.xz"
+        extracted_xml="build/${pkg}/${pkg}-${VERSION}.xml"
         [[ -f "$tarball" ]] || {
             echo "Error: $tarball not found — run without --cygnet-only first." >&2
             exit 1
         }
         mkdir -p "build/${pkg}"
-        tar -xJf "$tarball" -C build/ "${pkg}/${pkg}-${VERSION}.xml" 2>/dev/null || true
+        if ! tar -xJf "$tarball" -C build/ "${pkg}/${pkg}-${VERSION}.xml" 2>/dev/null; then
+            echo "Error: failed to extract ${pkg}/${pkg}-${VERSION}.xml from $tarball. Check that the tarball version and layout are correct." >&2
+            exit 1
+        fi
+        [[ -f "$extracted_xml" ]] || {
+            echo "Error: expected extracted file $extracted_xml was not found after unpacking $tarball." >&2
+            exit 1
+        }
     done
 fi
 echo ""
