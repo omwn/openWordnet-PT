@@ -18,7 +18,7 @@ SWAP_MAP = {
 
 DOCTYPE_14 = (
     "<!DOCTYPE LexicalResource SYSTEM "
-    "'http://globalwordnet.github.io/schemas/WN-LMF-1.4.dtd'>"
+    "'https://globalwordnet.github.io/schemas/WN-LMF-1.4.dtd'>"
 )
 
 
