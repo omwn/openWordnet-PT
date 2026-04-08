@@ -2,9 +2,12 @@
 #
 # build.sh — Build OpenWordnet-PT packages and Cygnet databases.
 #
-# Usage: bash build.sh [--rebuild]
-#   --rebuild   Wipe the cygnet work directory first (forces re-download of
-#               all wordnets — use when wordnets.toml URLs have changed)
+# Usage: bash build.sh [--rebuild] [--cygnet-only]
+#   --rebuild      Wipe the cygnet work directory first (forces re-download of
+#                  all wordnets — use when wordnets.toml URLs have changed)
+#   --cygnet-only  Skip LMF generation and wn load test; just run the Cygnet
+#                  database build and deploy docs/ (requires tarballs already
+#                  in build/).  Combine with --rebuild to also clear cache.
 #
 # Produces:
 #   build/own-pt-VERSION.tar.xz      — WN-LMF package (Portuguese)
@@ -23,14 +26,19 @@ PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CYGNET_DIR="$(cd "$PROJECT_DIR/../cygnet" && pwd)"
 CYGNET_WORK="$PROJECT_DIR/build/cygnet-work"
 
-if [[ "${1:-}" == "--rebuild" ]]; then
-    echo "Cleaning cygnet work directory for full rebuild..."
-    rm -rf "$CYGNET_WORK"
-fi
+MODE="full"
+for arg in "$@"; do
+    case "$arg" in
+        --rebuild)     rm -rf "$CYGNET_WORK"; echo "Cleaned cygnet work directory." ;;
+        --cygnet-only) MODE="cygnet-only" ;;
+        *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+    esac
+done
 
 mkdir -p external build
 
-# ── External dependencies ─────────────────────────────────────────────────────
+if [[ "$MODE" == "full" ]]; then
+# ── External dependencies ───────────────────────────────────────────────────
 if [ ! -d external/cili ]; then
     echo "Retrieving ILI map"
     git clone https://github.com/globalwordnet/cili.git external/cili
@@ -123,7 +131,20 @@ for lang, min_words in [("pt", 1000), ("en", 1000)]:
 PYEOF
 echo "wn load test passed."
 
-# ── Cygnet database build ─────────────────────────────────────────────────────
+fi  # end MODE == full
+
+# ── Cygnet database build ────────────────────────────────────────────────────
+if [[ "$MODE" == "cygnet-only" ]]; then
+    for pkg in "own-pt" "own-en"; do
+        tarball="build/${pkg}-${VERSION}.tar.xz"
+        [[ -f "$tarball" ]] || {
+            echo "Error: $tarball not found — run without --cygnet-only first." >&2
+            exit 1
+        }
+        mkdir -p "build/${pkg}"
+        tar -xJf "$tarball" -C build/ "${pkg}/${pkg}-${VERSION}.xml" 2>/dev/null || true
+    done
+fi
 echo ""
 echo "=== Building Cygnet databases ==="
 
