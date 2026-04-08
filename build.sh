@@ -134,13 +134,14 @@ cp "$PROJECT_DIR/build/own-pt/own-pt-${VERSION}.xml" \
 cp "$PROJECT_DIR/build/own-en/own-en-${VERSION}.xml" \
    "$CYGNET_WORK/bin/raw_wns/own-en-${VERSION}.xml"
 
-bash "$CYGNET_DIR/build.sh" --work-dir "$CYGNET_WORK"
+bash "$CYGNET_DIR/build.sh" --work-dir "$(realpath "$CYGNET_WORK")"
 
 # ── Deploy docs/ ──────────────────────────────────────────────────────────────
 echo "Deploying to docs/"
 mkdir -p "$PROJECT_DIR/docs"
 cp "$CYGNET_DIR/web/index.html"          "$PROJECT_DIR/docs/"
 cp "$CYGNET_DIR/web/relations.json"      "$PROJECT_DIR/docs/"
+cp -r "$CYGNET_DIR/web/img"             "$PROJECT_DIR/docs/"
 cp "$PROJECT_DIR/etc/local.json"         "$PROJECT_DIR/docs/"
 cp "$PROJECT_DIR/logo/ownpt-baselogo.png" "$PROJECT_DIR/docs/"
 touch "$PROJECT_DIR/docs/.nojekyll"
